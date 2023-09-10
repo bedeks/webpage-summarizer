@@ -1,29 +1,35 @@
-import { useState } from "react"
+import { sendToContentScript } from "@plasmohq/messaging"
+import {useState} from "react";
+import { Button } from "@mui/material";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+
 
 function IndexPopup() {
-  const [data, setData] = useState("")
+  const [summary, setSummary] = useState("No summary found");
 
   return (
     <div
       style={{
-        display: "flex",
-        flexDirection: "column",
-        padding: 16
       }}>
       <h2>
-        Welcome to your
-        <a href="https://www.plasmo.com" target="_blank">
-          {" "}
-          Plasmo
-        </a>{" "}
-        Extension!
+        Welcome to the webpage summarizer!
       </h2>
-      <input onChange={(e) => setData(e.target.value)} value={data} />
-      <a href="https://docs.plasmo.com" target="_blank">
-        View Docs
-      </a>
+      <Button onClick={async() => {
+          const resp = await sendToContentScript({name: "GenerateSummary"});
+          setSummary(resp)}}>
+            Summarize webpage content
+            </Button>
+      <Card>
+      <CardContent>
+        <Typography variant="body1">
+          {summary}
+        </Typography>
+      </CardContent>
+    </Card>
     </div>
   )
 }
 
-export default IndexPopup
+export default IndexPopup;
