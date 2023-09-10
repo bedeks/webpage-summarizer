@@ -16,7 +16,7 @@ function IndexPopup() {
       <h2>
         Welcome to the webpage summarizer!
       </h2>
-      <Button onClick={async() => {
+      {/* <Button onClick={async() => {
           const resp = await sendToContentScript({name: "GenerateSummary"});
           setSummary(resp)}}>
             Summarize webpage content
@@ -27,7 +27,7 @@ function IndexPopup() {
           {summary}
         </Typography>
       </CardContent>
-    </Card>
+    </Card> */}
     </div>
   )
 }
