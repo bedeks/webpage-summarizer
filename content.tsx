@@ -29,27 +29,29 @@ export const config: PlasmoCSConfig = {
 //     console.log(resp)
 // })
 
-const GenerateSummary = () => {
-  // useMessage<string, string>(async (req, res) => {
-  //   const openaiResp = await sendToBackground({
-  //     name: "openaichat",
-  //     body: {
-  //       prompt: document.documentElement.outerHTML
-  //     }
-  //   })
-  //   res.send(openaiResp)
-  // })
-  async function GenerateSummaryForWebpage() {
-    const openaiResp = await sendToBackground({
-          name: "openaichat",
-          body: {
-            prompt: document.documentElement.outerHTML
-          }
-        })
-    console.log(openaiResp)
-    return openaiResp.message.choices[0].message.content
+function extractText(node) {
+  let text = '';
+  for (const childNode of node.childNodes) {
+      if (childNode.nodeType === 3) { // Text node
+          text += childNode.textContent.trim() + ' ';
+      } else if (childNode.nodeType === 1) { // Element node
+          text += extractText(childNode) + ' ';
+      }
   }
+  return text.trim();
+}
 
+async function GenerateSummaryForWebpage() {
+  const openaiResp = await sendToBackground({
+    name: "openaichat",
+    body: {
+      prompt: extractText(document.body)
+    }
+  })
+  console.log(openaiResp)
+  return openaiResp
+}
+const GenerateSummary = () => {
   const [summary, setSummary] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -59,7 +61,7 @@ const GenerateSummary = () => {
     if (!isGenerated) {
       setIsLoading(true);
       const resp = await GenerateSummaryForWebpage();
-      setSummary(resp);
+      setSummary(JSON.stringify(resp));
       setIsLoading(false);
       setIsGenerated(true);
       setIsVisible(true);
